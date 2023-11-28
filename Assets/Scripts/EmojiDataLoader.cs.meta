@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 8b1c1623e962a4907b3bfc01ac8ab37a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - emojiJson: {fileID: 4900000, guid: f75f8d44bb3af4c18a9bb6f1f7f1fdd9, type: 3}
+  executionOrder: -100
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,4 @@
+repository "Good Emojis@excla_machine@cloud"
+  path "/"
+    br "/main"
+    co "/main"
