@@ -69,6 +69,12 @@ public class EmojiDataLoader : MonoBehaviour
         }
     }
 
+    // Public method to get emojiData
+    public EmojiDataWrapper GetEmojiData()
+    {
+        return emojiData;
+    }
+
     private void TestRandomEmojiSelection()
     {
         EmojiInfo[] randomEmojis = GetRandomEmojisFromSameCategory();

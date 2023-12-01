@@ -14,7 +14,7 @@ public class EmojiSpriteMapper : MonoBehaviour
         foreach (Sprite sprite in sprites)
         {
             string code = GetCodeFromFilename(sprite.name);
-            Debug.Log($"code {code}");
+            //Debug.Log($"code {code}");
             if (!string.IsNullOrEmpty(code))
             {
                 emojiSprites[code] = sprite;
@@ -33,7 +33,7 @@ public class EmojiSpriteMapper : MonoBehaviour
 
     private string GetCodeFromFilename(string filename)
     {
-        Debug.Log($"filename {filename}");
+        //Debug.Log($"filename {filename}");
         const string prefix = "emoji_u";
 
         if (filename.StartsWith(prefix))
