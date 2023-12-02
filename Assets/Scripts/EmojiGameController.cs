@@ -112,8 +112,8 @@ public class EmojiGameController : MonoBehaviour
         renderer.sprite = sprite;
 
         // Set the sorting layer and order
-        renderer.sortingLayerName = "Foreground"; // Name of the sorting layer
-        renderer.sortingOrder = 1; // Higher number means it will be rendered on top
+        //renderer.sortingLayerName = "Foreground"; // Name of the sorting layer
+        //renderer.sortingOrder = 1; // Higher number means it will be rendered on top
     }
 
 
