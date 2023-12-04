@@ -103,18 +103,26 @@ public class EmojiGameController : MonoBehaviour
     void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite)
     {
         GameObject emojiObj = new GameObject("Emoji");
-        Debug.Log($"obj 1: {emojiObj}");
 
+        // Calculate world position from grid position
         Vector3 worldPosition = emojiTilemap.CellToWorld(gridPosition);
+
+        // Adjust the position by 1 pixel up and to the right
+        // Assuming your tilemap is using 8px cells, and Unity units correspond to pixels
+        float adjustment = 1.0f / 24.0f; // 1 pixel in terms of Unity units
+        worldPosition.x += adjustment;
+        worldPosition.y += adjustment;
+
         emojiObj.transform.position = worldPosition;
 
         SpriteRenderer renderer = emojiObj.AddComponent<SpriteRenderer>();
         renderer.sprite = sprite;
 
         // Set the sorting layer and order
-        //renderer.sortingLayerName = "Foreground"; // Name of the sorting layer
-        //renderer.sortingOrder = 1; // Higher number means it will be rendered on top
+        renderer.sortingLayerName = "Foreground"; // Name of the sorting layer
+        renderer.sortingOrder = 1; // Higher number means it will be rendered on top
     }
+
 
 
 
