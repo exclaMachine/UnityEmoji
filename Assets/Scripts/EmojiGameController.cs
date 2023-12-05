@@ -73,40 +73,45 @@ public class EmojiGameController : MonoBehaviour
         return placeholderPositions;
     }
 
-
     void PlaceRandomEmojisOnMap()
     {
-        const int maxAttempts = 10; // Set a limit to avoid potential infinite loops
-        int attempts = 0;
+        List<Vector3Int> placeholderPositions = FindPlaceholderTilePositions(emojiTilemap, placeholderTile);
+        const int groupSize = 3; // Number of tiles in each group
+        const int totalGroups = 5; // Total number of groups
+        int placedGroups = 0;
 
-        while (attempts < maxAttempts)
+        for (int i = 0; i < placeholderPositions.Count && placedGroups < totalGroups; i += groupSize)
         {
-            EmojiInfo[] emojis = emojiDataLoader.GetRandomEmojisFromSameCategory();
-
-            if (emojis != null && emojis.Length == 2)
+            // Check if there are enough placeholders for the current group
+            if (i + groupSize <= placeholderPositions.Count)
             {
-                // Assuming you take the first two placeholder positions
-                List<Vector3Int> placeholderPositions = FindPlaceholderTilePositions(emojiTilemap, placeholderTile);
-                if (placeholderPositions.Count >= 2)
-                {
-                    Vector3Int position1 = placeholderPositions[0];
-                    Vector3Int position2 = placeholderPositions[1];
-
-                    Sprite sprite1 = emojiSpriteMapper.GetSprite(emojis[0].code);
-                    Sprite sprite2 = emojiSpriteMapper.GetSprite(emojis[1].code);
-
-                    CreateEmojiGameObject(position1, sprite1);
-                    CreateEmojiGameObject(position2, sprite2);
-
-                    return; // Exit the loop once two valid emojis are placed
-                }
+                PlaceRandomEmojiGroup(placeholderPositions.GetRange(i, groupSize));
+                Debug.Log("Invalid number of positions for emoji group");
+                placedGroups++;
             }
+        }
+    }
 
-            attempts++; // Increment the attempts counter
+    void PlaceRandomEmojiGroup(List<Vector3Int> positions)
+    {
+        if (positions.Count != 3)
+        {
+            Debug.LogError("Invalid number of positions for emoji group");
+            return;
         }
 
-        Debug.LogWarning("Unable to find two emojis from the same category after several attempts.");
+        // Place two random emojis
+        EmojiInfo[] emojis = emojiDataLoader.GetRandomEmojisFromSameCategory();
+        if (emojis != null && emojis.Length == 2)
+        {
+            CreateEmojiGameObject(positions[0], emojiSpriteMapper.GetSprite(emojis[0].code));
+            CreateEmojiGameObject(positions[1], emojiSpriteMapper.GetSprite(emojis[1].code));
+        }
+
+        // Place a blank tile at the third position
+        CreateBlankEmojiGameObject(positions[2]);
     }
+
     void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite)
     {
         GameObject emojiObj = new GameObject("Emoji");
@@ -121,14 +126,30 @@ public class EmojiGameController : MonoBehaviour
         worldPosition.y += adjustment;
 
         emojiObj.transform.position = worldPosition;
-
         SpriteRenderer renderer = emojiObj.AddComponent<SpriteRenderer>();
         renderer.sprite = sprite;
 
-        // Set the sorting layer and order
-        renderer.sortingLayerName = "Foreground"; // Name of the sorting layer
-        renderer.sortingOrder = 1; // Higher number means it will be rendered on top
+        // Set sorting layer and order
+        renderer.sortingLayerName = "Foreground";
+        renderer.sortingOrder = 1;
     }
+
+    void CreateBlankEmojiGameObject(Vector3Int position)
+    {
+        // Create a GameObject for the blank emoji
+        GameObject blankEmojiObj = new GameObject("BlankEmoji");
+        blankEmojiObj.transform.position = position;
+        SpriteRenderer renderer = blankEmojiObj.AddComponent<SpriteRenderer>();
+
+        // Assign the blank sprite or color to renderer.sprite
+        // Example: renderer.sprite = blankEmojiSprite;
+        renderer.color = Color.white;
+
+        // Set sorting layer and order
+        renderer.sortingLayerName = "Foreground";
+        renderer.sortingOrder = 1;
+    }
+
 
 
 
