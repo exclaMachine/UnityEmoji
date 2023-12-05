@@ -52,7 +52,7 @@ public class EmojiDataLoader : MonoBehaviour
     void Start()
     {
         LoadEmojiData();
-        TestRandomEmojiSelection();
+        //TestRandomEmojiSelection();
         // GetRandomEmojisFromSameCategory();
     }
 
@@ -96,8 +96,12 @@ public class EmojiDataLoader : MonoBehaviour
             return null;
         }
 
+        int randomGroupIndex = UnityEngine.Random.Range(0, emojiData.groups.Count);
+
         // Select a random group
         var randomGroup = emojiData.groups[UnityEngine.Random.Range(0, emojiData.groups.Count)];
+        Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
+
         if (randomGroup.subgroups == null || randomGroup.subgroups.Count == 0)
         {
             Debug.LogError("Selected group has no subgroups");

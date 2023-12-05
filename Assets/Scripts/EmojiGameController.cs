@@ -76,30 +76,37 @@ public class EmojiGameController : MonoBehaviour
 
     void PlaceRandomEmojisOnMap()
     {
-        List<Vector3Int> placeholderPositions = FindPlaceholderTilePositions(emojiTilemap, placeholderTile);
+        const int maxAttempts = 10; // Set a limit to avoid potential infinite loops
+        int attempts = 0;
 
-        // Make sure you have at least two placeholder positions
-        if (placeholderPositions.Count >= 2)
+        while (attempts < maxAttempts)
         {
             EmojiInfo[] emojis = emojiDataLoader.GetRandomEmojisFromSameCategory();
 
             if (emojis != null && emojis.Length == 2)
             {
                 // Assuming you take the first two placeholder positions
-                Vector3Int position1 = placeholderPositions[0];
-                Vector3Int position2 = placeholderPositions[1];
-                Debug.Log($"pos 1: {position1}");
-                Debug.Log($"pos 2: {position2}");
-                Sprite sprite1 = emojiSpriteMapper.GetSprite(emojis[0].code);
-                Sprite sprite2 = emojiSpriteMapper.GetSprite(emojis[1].code);
-                Debug.Log($"sprite 2: {sprite2}");
-                Debug.Log($"sprite 1: {sprite1}");
-                CreateEmojiGameObject(position1, sprite1);
-                CreateEmojiGameObject(position2, sprite2);
-            }
-        }
-    }
+                List<Vector3Int> placeholderPositions = FindPlaceholderTilePositions(emojiTilemap, placeholderTile);
+                if (placeholderPositions.Count >= 2)
+                {
+                    Vector3Int position1 = placeholderPositions[0];
+                    Vector3Int position2 = placeholderPositions[1];
 
+                    Sprite sprite1 = emojiSpriteMapper.GetSprite(emojis[0].code);
+                    Sprite sprite2 = emojiSpriteMapper.GetSprite(emojis[1].code);
+
+                    CreateEmojiGameObject(position1, sprite1);
+                    CreateEmojiGameObject(position2, sprite2);
+
+                    return; // Exit the loop once two valid emojis are placed
+                }
+            }
+
+            attempts++; // Increment the attempts counter
+        }
+
+        Debug.LogWarning("Unable to find two emojis from the same category after several attempts.");
+    }
     void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite)
     {
         GameObject emojiObj = new GameObject("Emoji");
