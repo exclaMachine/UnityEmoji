@@ -3,6 +3,8 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using System.Linq;
 using System.Collections.Generic;
+using TMPro;
+
 
 public class EmojiGameController : MonoBehaviour
 {
@@ -14,6 +16,9 @@ public class EmojiGameController : MonoBehaviour
 
     private EmojiSpriteMapper emojiSpriteMapper;
     private EmojiDataWrapper emojiData;
+
+    public TextMeshProUGUI emojiNameText; // Assign this in the Unity Editor
+
 
     //EmojiDataLoader dataLoader = ...;
 
@@ -104,18 +109,19 @@ public class EmojiGameController : MonoBehaviour
         EmojiInfo[] emojis = emojiDataLoader.GetRandomEmojisFromSameCategory();
         if (emojis != null && emojis.Length == 2)
         {
-            CreateEmojiGameObject(positions[0], emojiSpriteMapper.GetSprite(emojis[0].code));
-            CreateEmojiGameObject(positions[1], emojiSpriteMapper.GetSprite(emojis[1].code));
+            Debug.Log($"Emoji Name1: {emojis[0].description}, Emoji Name2: {emojis[1].description}");
+
+            CreateEmojiGameObject(positions[0], emojiSpriteMapper.GetSprite(emojis[0].code), emojis[0].description);
+            CreateEmojiGameObject(positions[1], emojiSpriteMapper.GetSprite(emojis[1].code), emojis[1].description);
         }
 
         // Place a blank tile at the third position
         CreateBlankEmojiGameObject(positions[2]);
     }
 
-    void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite)
+    void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite, string emojiName)
     {
         GameObject emojiObj = new GameObject("Emoji");
-
         // Calculate world position from grid position
         Vector3 worldPosition = emojiTilemap.CellToWorld(gridPosition);
 
@@ -129,10 +135,27 @@ public class EmojiGameController : MonoBehaviour
         SpriteRenderer renderer = emojiObj.AddComponent<SpriteRenderer>();
         renderer.sprite = sprite;
 
-        // Set sorting layer and order
+        // Set the sorting layer and order
         renderer.sortingLayerName = "Foreground";
         renderer.sortingOrder = 1;
+
+        BoxCollider2D collider = emojiObj.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+
+        // Increase the size of the collider
+        collider.size = new Vector2(collider.size.x * 1.2f, collider.size.y * 1.2f); // Adjust the multiplier as needed
+
+        // Attach the EmojiInteraction script
+        // EmojiInteraction interaction = emojiObj.AddComponent<EmojiInteraction>();
+        // interaction.onPlayerEnter.AddListener(() => ShowEmojiName(emojiName));
+        // interaction.onPlayerExit.AddListener(HideEmojiName);
+
+        EmojiInteraction interaction = emojiObj.AddComponent<EmojiInteraction>();
+        interaction.onPlayerEnter += () => ShowEmojiName(emojiName, worldPosition);
+        interaction.onPlayerExit += HideEmojiName;
+
     }
+
 
     void CreateBlankEmojiGameObject(Vector3Int position)
     {
@@ -150,7 +173,21 @@ public class EmojiGameController : MonoBehaviour
         renderer.sortingOrder = 1;
     }
 
+    public void ShowEmojiName(string name, Vector3 emojiPosition)
+    {
+        emojiNameText.text = name;
 
+        // Position the text object above the emoji
+        Vector3 textPosition = Camera.main.WorldToScreenPoint(emojiPosition + new Vector3(0, 0.5f, 0)); // Adjust the offset as needed
+        emojiNameText.transform.position = textPosition;
+
+        emojiNameText.gameObject.SetActive(true);
+    }
+
+    public void HideEmojiName()
+    {
+        emojiNameText.gameObject.SetActive(false);
+    }
 
 
 
