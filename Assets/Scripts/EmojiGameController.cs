@@ -10,8 +10,8 @@ public class EmojiGameController : MonoBehaviour
 {
     public Tilemap emojiTilemap; // Assign in the inspector
     public Tile placeholderTile; // Assign in the inspector
-    //public Tile placeholderTile;
-    public InputField playerInputField; // Assign in the inspector
+    public Sprite blankEmojiSprite;
+    public TMP_InputField tmpInputField;
     private EmojiDataLoader emojiDataLoader;
 
     private EmojiSpriteMapper emojiSpriteMapper;
@@ -157,20 +157,69 @@ public class EmojiGameController : MonoBehaviour
     }
 
 
-    void CreateBlankEmojiGameObject(Vector3Int position)
+    void CreateBlankEmojiGameObject(Vector3Int gridPosition)
     {
         // Create a GameObject for the blank emoji
         GameObject blankEmojiObj = new GameObject("BlankEmoji");
-        blankEmojiObj.transform.position = position;
+        blankEmojiObj.transform.position = gridPosition;
         SpriteRenderer renderer = blankEmojiObj.AddComponent<SpriteRenderer>();
+
+        // Calculate world position from grid position
+        Vector3 worldPosition = emojiTilemap.CellToWorld(gridPosition);
+
+        // Adjust the position by 1 pixel up and to the right
+        // Assuming your tilemap is using 8px cells, and Unity units correspond to pixels
+        float adjustment = 1.0f / 24.0f; // 1 pixel in terms of Unity units
+        worldPosition.x += adjustment;
+        worldPosition.y += adjustment;
+
+        blankEmojiObj.transform.position = worldPosition;
 
         // Assign the blank sprite or color to renderer.sprite
         // Example: renderer.sprite = blankEmojiSprite;
-        renderer.color = Color.white;
+        renderer.sprite = blankEmojiSprite;
+        //renderer.color = Color.blue;
 
         // Set sorting layer and order
         renderer.sortingLayerName = "Foreground";
         renderer.sortingOrder = 1;
+
+        // Add a Canvas to the GameObject
+        // Canvas canvas = blankEmojiObj.AddComponent<Canvas>();
+        // canvas.renderMode = RenderMode.WorldSpace;
+        // CanvasScaler scaler = blankEmojiObj.AddComponent<CanvasScaler>();
+        // scaler.dynamicPixelsPerUnit = 10; // Adjust this value as needed
+        // GraphicRaycaster raycaster = blankEmojiObj.AddComponent<GraphicRaycaster>();
+
+        // // Create an Input Field under this Canvas
+        // GameObject inputFieldGO = new GameObject("InputField");
+        // inputFieldGO.transform.SetParent(blankEmojiObj.transform);
+
+        // // Set position and size of the input field
+        // RectTransform inputFieldRT = inputFieldGO.AddComponent<RectTransform>();
+        // inputFieldRT.sizeDelta = new Vector2(100, 50); // Set size (width, height)
+        // inputFieldRT.anchoredPosition = new Vector2(0, 50); // Adjust position as needed
+
+        // // Add InputField component
+        // TMP_InputField tmpInputField = inputFieldGO.AddComponent<TMP_InputField>();
+        // tmpInputField.textComponent = inputFieldGO.AddComponent<TextMeshProUGUI>();
+
+        //Add Collider and Interaction
+        BoxCollider2D collider = blankEmojiObj.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        collider.size = new Vector2(collider.size.x * 1.5f, collider.size.y * 1.5f); // Adjust the multiplier as needed
+
+
+
+        // EmojiInteraction interaction = blankEmojiGameObject.GetComponent<EmojiInteraction>();
+        // interaction.isBlankEmoji = true;
+        // interaction.onPlayerEnter.AddListener((position) => ShowInputFieldAtPosition(position));
+        // interaction.onPlayerExit.AddListener(HideInputField);
+
+        EmojiInteraction interaction = blankEmojiObj.AddComponent<EmojiInteraction>();
+        interaction.onPlayerEnter += () => ShowInputFieldAtPosition(worldPosition);
+        interaction.onPlayerExit += HideInputField;
+
     }
 
     public void ShowEmojiName(string name, Vector3 emojiPosition)
@@ -189,16 +238,28 @@ public class EmojiGameController : MonoBehaviour
         emojiNameText.gameObject.SetActive(false);
     }
 
+    private void ShowInputFieldAtPosition(Vector3 position)
+    {
+        // Position the input field above the blank emoji
+        Debug.Log("input field!");
+        Vector3 inputFieldPosition = Camera.main.WorldToScreenPoint(position + new Vector3(0, 0.5f, 0)); // Adjust the offset as needed
+        tmpInputField.transform.position = inputFieldPosition;
+        tmpInputField.gameObject.SetActive(true);
+    }
 
+    private void HideInputField()
+    {
+        tmpInputField.gameObject.SetActive(false);
+    }
 
     // Tile GetEmojiTile(EmojiInfo emoji)
     // {
     //     // Logic to get the corresponding Tile for the given emoji
     // }
 
-    public void OnPlayerInputSubmit()
-    {
-        string playerInput = playerInputField.text;
-        // Compare player input with correct answer and provide feedback
-    }
+    // public void OnPlayerInputSubmit()
+    // {
+    //     string playerInput = playerInputField.text;
+    //     // Compare player input with correct answer and provide feedback
+    // }
 }

@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class EmojiInteraction : MonoBehaviour
 {
     public System.Action onPlayerEnter;
     public System.Action onPlayerExit;
+
+    //private TMP_InputField inputField;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
