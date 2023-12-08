@@ -3,30 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-// public class EmojiInteraction : MonoBehaviour
-// {
-//     public UnityEvent onPlayerEnter = new UnityEvent();
-//     public UnityEvent onPlayerExit = new UnityEvent();
-
-//     void OnTriggerEnter2D(Collider2D other)
-//     {
-//         if (other.CompareTag("Player"))  // Check if the collider is the player
-//         {
-//             onPlayerEnter.Invoke();
-//         }
-//     }
-
-//     void OnTriggerExit2D(Collider2D other)
-//     {
-//         if (other.CompareTag("Player"))
-//         {
-//             onPlayerExit.Invoke();
-//         }
-//     }
-// }
-
-//using UnityEngine;
-
 public class EmojiInteraction : MonoBehaviour
 {
     public System.Action onPlayerEnter;
