@@ -41,8 +41,6 @@ public class EmojiGameController : MonoBehaviour
             {
                 int randomGroupIndex = UnityEngine.Random.Range(0, emojiData.groups.Count);
                 EmojiGroup randomGroup = emojiData.groups[randomGroupIndex];
-
-                // Use randomGroup for further logic
             }
             else
             {
