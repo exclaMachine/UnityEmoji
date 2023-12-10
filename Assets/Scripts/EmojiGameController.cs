@@ -13,14 +13,14 @@ public class EmojiGameController : MonoBehaviour
     public Sprite blankEmojiSprite;
     public TMP_InputField tmpInputField;
     private EmojiDataLoader emojiDataLoader;
+    private List<string> possibleAnswers;
 
     private EmojiSpriteMapper emojiSpriteMapper;
     private EmojiDataWrapper emojiData;
 
     public TextMeshProUGUI emojiNameText; // Assign this in the Unity Editor
 
-
-    //EmojiDataLoader dataLoader = ...;
+    public EmojiAnswerChecker m_answerChecker;
 
 
     void Start()
@@ -116,7 +116,7 @@ public class EmojiGameController : MonoBehaviour
         }
 
         // Place a blank tile at the third position
-        CreateBlankEmojiGameObject(positions[2]);
+        m_answerChecker = CreateBlankEmojiGameObject(positions[2]);
     }
 
     void CreateEmojiGameObject(Vector3Int gridPosition, Sprite sprite, string emojiName)
@@ -145,10 +145,6 @@ public class EmojiGameController : MonoBehaviour
         // Increase the size of the collider
         collider.size = new Vector2(collider.size.x * 1.2f, collider.size.y * 1.2f); // Adjust the multiplier as needed
 
-        // Attach the EmojiInteraction script
-        // EmojiInteraction interaction = emojiObj.AddComponent<EmojiInteraction>();
-        // interaction.onPlayerEnter.AddListener(() => ShowEmojiName(emojiName));
-        // interaction.onPlayerExit.AddListener(HideEmojiName);
 
         EmojiInteraction interaction = emojiObj.AddComponent<EmojiInteraction>();
         interaction.onPlayerEnter += () => ShowEmojiName(emojiName, worldPosition);
@@ -157,7 +153,7 @@ public class EmojiGameController : MonoBehaviour
     }
 
 
-    void CreateBlankEmojiGameObject(Vector3Int gridPosition)
+    EmojiAnswerChecker CreateBlankEmojiGameObject(Vector3Int gridPosition)
     {
         // Create a GameObject for the blank emoji
         GameObject blankEmojiObj = new GameObject("BlankEmoji");
@@ -184,42 +180,21 @@ public class EmojiGameController : MonoBehaviour
         renderer.sortingLayerName = "Foreground";
         renderer.sortingOrder = 1;
 
-        // Add a Canvas to the GameObject
-        // Canvas canvas = blankEmojiObj.AddComponent<Canvas>();
-        // canvas.renderMode = RenderMode.WorldSpace;
-        // CanvasScaler scaler = blankEmojiObj.AddComponent<CanvasScaler>();
-        // scaler.dynamicPixelsPerUnit = 10; // Adjust this value as needed
-        // GraphicRaycaster raycaster = blankEmojiObj.AddComponent<GraphicRaycaster>();
-
-        // // Create an Input Field under this Canvas
-        // GameObject inputFieldGO = new GameObject("InputField");
-        // inputFieldGO.transform.SetParent(blankEmojiObj.transform);
-
-        // // Set position and size of the input field
-        // RectTransform inputFieldRT = inputFieldGO.AddComponent<RectTransform>();
-        // inputFieldRT.sizeDelta = new Vector2(100, 50); // Set size (width, height)
-        // inputFieldRT.anchoredPosition = new Vector2(0, 50); // Adjust position as needed
-
-        // // Add InputField component
-        // TMP_InputField tmpInputField = inputFieldGO.AddComponent<TMP_InputField>();
-        // tmpInputField.textComponent = inputFieldGO.AddComponent<TextMeshProUGUI>();
-
         //Add Collider and Interaction
         BoxCollider2D collider = blankEmojiObj.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
         collider.size = new Vector2(collider.size.x * 1.5f, collider.size.y * 1.5f); // Adjust the multiplier as needed
 
-
-
-        // EmojiInteraction interaction = blankEmojiGameObject.GetComponent<EmojiInteraction>();
-        // interaction.isBlankEmoji = true;
-        // interaction.onPlayerEnter.AddListener((position) => ShowInputFieldAtPosition(position));
-        // interaction.onPlayerExit.AddListener(HideInputField);
+        // Attach answer checker and set possible answers
+        EmojiAnswerChecker answerChecker = blankEmojiObj.AddComponent<EmojiAnswerChecker>();
+        int groupIndex = emojiDataLoader.GetCurrentEmojiGroupIndex();
+        answerChecker.SetPossibleAnswers(emojiDataLoader, groupIndex);
 
         EmojiInteraction interaction = blankEmojiObj.AddComponent<EmojiInteraction>();
         interaction.onPlayerEnter += () => ShowInputFieldAtPosition(worldPosition);
-        interaction.onPlayerExit += HideInputField;
+        //interaction.onPlayerExit += HideInputField;
 
+        return answerChecker;
     }
 
     public void ShowEmojiName(string name, Vector3 emojiPosition)
@@ -241,7 +216,6 @@ public class EmojiGameController : MonoBehaviour
     private void ShowInputFieldAtPosition(Vector3 position)
     {
         // Position the input field above the blank emoji
-        Debug.Log("input field!");
         Vector3 inputFieldPosition = Camera.main.WorldToScreenPoint(position + new Vector3(0, 0.5f, 0)); // Adjust the offset as needed
         tmpInputField.transform.position = inputFieldPosition;
         tmpInputField.gameObject.SetActive(true);
@@ -252,14 +226,40 @@ public class EmojiGameController : MonoBehaviour
         tmpInputField.gameObject.SetActive(false);
     }
 
-    // Tile GetEmojiTile(EmojiInfo emoji)
-    // {
-    //     // Logic to get the corresponding Tile for the given emoji
-    // }
 
-    // public void OnPlayerInputSubmit()
-    // {
-    //     string playerInput = playerInputField.text;
-    //     // Compare player input with correct answer and provide feedback
-    // }
+    public void CheckInput(string input)
+    {
+        if (m_answerChecker != null && m_answerChecker.CheckAnswer(input))
+        {
+            Debug.Log("Correct Answer!");
+            // Implement logic for correct answer, e.g., make emojis disappear
+        }
+        else
+        {
+            Debug.Log("Incorrect Answer");
+            // Implement logic for incorrect answer
+        }
+    }
+
+    private bool IsCloseEnough(string input, string description)
+    {
+        // Implement fuzzy matching logic here
+        // For now, it's a simple substring check
+        return description.Contains(input);
+    }
+
+    private void OnCorrectAnswer()
+    {
+        // Handle correct answer logic
+        Debug.Log("Correct Answer!");
+        // TODO: Implement what happens on correct answer, e.g., reveal emoji, award points
+    }
+
+    private void OnIncorrectAnswer()
+    {
+        // Handle incorrect answer logic
+        Debug.Log("Incorrect Answer!");
+        // TODO: Implement what happens on incorrect answer
+    }
+
 }

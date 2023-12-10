@@ -49,6 +49,10 @@ public class EmojiDataLoader : MonoBehaviour
 
     //private EmojiData emojiData;
     private EmojiDataWrapper emojiData;
+
+    private List<string> currentPlaythroughEmojiDescriptions = new List<string>();
+
+    private int m_emojiGroupIndex;
     void Start()
     {
         LoadEmojiData();
@@ -90,6 +94,9 @@ public class EmojiDataLoader : MonoBehaviour
 
     public EmojiInfo[] GetRandomEmojisFromSameCategory()
     {
+        // // Clear the current descriptions list
+        // currentPlaythroughEmojiDescriptions.Clear();
+
         if (emojiData == null || emojiData.groups == null || emojiData.groups.Count == 0)
         {
             Debug.LogError("Emoji data is not loaded or has no groups");
@@ -97,6 +104,7 @@ public class EmojiDataLoader : MonoBehaviour
         }
 
         int randomGroupIndex = UnityEngine.Random.Range(0, emojiData.groups.Count);
+        m_emojiGroupIndex = randomGroupIndex;
 
         // Select a random group
         var randomGroup = emojiData.groups[UnityEngine.Random.Range(0, emojiData.groups.Count)];
@@ -133,8 +141,20 @@ public class EmojiDataLoader : MonoBehaviour
             secondEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
         } while (secondEmoji == firstEmoji);
 
+        currentPlaythroughEmojiDescriptions.Add(firstEmoji.description);
+        currentPlaythroughEmojiDescriptions.Add(secondEmoji.description);
+
         return new EmojiInfo[] { firstEmoji, secondEmoji };
     }
 
+    public int GetCurrentEmojiGroupIndex()
+    {
+        return m_emojiGroupIndex;
+    }
+
+    public bool IsEmojiInCurrentPlaythrough(string description)
+    {
+        return currentPlaythroughEmojiDescriptions.Contains(description);
+    }
 
 }
