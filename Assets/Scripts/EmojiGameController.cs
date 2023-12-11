@@ -170,7 +170,6 @@ public class EmojiGameController : MonoBehaviour
         blankEmojiObj.transform.position = worldPosition;
 
         // Assign the blank sprite or color to renderer.sprite
-        // Example: renderer.sprite = blankEmojiSprite;
         renderer.sprite = blankEmojiSprite;
         //renderer.color = Color.blue;
 
