@@ -230,7 +230,18 @@ public class EmojiGameController : MonoBehaviour
         if (m_answerChecker != null && m_answerChecker.CheckAnswer(typed))
         {
             Debug.Log("Correct Answer!");
-            // Implement logic for correct answer, e.g., make emojis disappear
+
+            EmojiInfo matchedEmoji = m_answerChecker.GetMatchedEmojiInfo();
+            if (matchedEmoji != null)
+            {
+                // Get the code of the matched emoji
+                string matchedEmojiCode = matchedEmoji.code;
+                Debug.Log($"Matched Emoji Code: {matchedEmojiCode}");
+
+                // Implement logic to change the blank emoji to the user's inputted emoji
+            }
+
+
         }
         else
         {

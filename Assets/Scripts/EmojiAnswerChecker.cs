@@ -5,6 +5,8 @@ using UnityEngine;
 public class EmojiAnswerChecker : MonoBehaviour
 {
     private List<string> possibleAnswers;
+    private List<EmojiInfo> possibleEmojis;
+    private int m_matchedEmojiIndex = -1; // -1 indicates no match
 
     //private EmojiDataLoader dataLoader;
 
@@ -13,6 +15,7 @@ public class EmojiAnswerChecker : MonoBehaviour
         EmojiDataWrapper emojiData = dataLoader.GetEmojiData();
 
         possibleAnswers = new List<string>();
+        possibleEmojis = new List<EmojiInfo>();
         var group = emojiData.groups[groupIndex];
         //var group = dataLoader.GetEmojiData().groups[groupIndex];
 
@@ -27,6 +30,7 @@ public class EmojiAnswerChecker : MonoBehaviour
                     if (dataLoader.IsEmojiInCurrentPlaythrough(emoji.description) == false)
                     {
                         possibleAnswers.Add(emoji.description);
+                        possibleEmojis.Add(emoji);
                     }
                 }
             }
@@ -39,19 +43,25 @@ public class EmojiAnswerChecker : MonoBehaviour
         // Convert playerInput to lowercase for case-insensitive comparison
         string inputLower = playerInput.ToLower();
 
-        // Iterate through the possible answers
-        foreach (string answer in possibleAnswers)
+        for (int i = 0; i < possibleAnswers.Count; i++)
         {
-            // Convert the answer to lowercase
-            string answerLower = answer.ToLower();
-
-            // Check if player input matches the answer
+            string answerLower = possibleAnswers[i].ToLower();
             if (inputLower == answerLower)
             {
+                m_matchedEmojiIndex = i; // Store the index of the matched emoji
                 return true; // Match found
             }
         }
 
         return false; // No match found
+    }
+    public EmojiInfo GetMatchedEmojiInfo()
+    {
+        if (m_matchedEmojiIndex >= 0 && m_matchedEmojiIndex < possibleEmojis.Count)
+        {
+            return possibleEmojis[m_matchedEmojiIndex];
+        }
+
+        return null; // No matched emoji or invalid index
     }
 }

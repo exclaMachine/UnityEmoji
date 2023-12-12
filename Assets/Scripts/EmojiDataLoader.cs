@@ -51,6 +51,7 @@ public class EmojiDataLoader : MonoBehaviour
     private EmojiDataWrapper emojiData;
 
     private List<string> currentPlaythroughEmojiDescriptions = new List<string>();
+    private List<EmojiInfo> currentPlaythroughEmojis = new List<EmojiInfo>();
 
     private int m_emojiGroupIndex;
     void Start()
@@ -143,6 +144,10 @@ public class EmojiDataLoader : MonoBehaviour
 
         currentPlaythroughEmojiDescriptions.Add(firstEmoji.description);
         currentPlaythroughEmojiDescriptions.Add(secondEmoji.description);
+
+        currentPlaythroughEmojis.Add(firstEmoji);
+        currentPlaythroughEmojis.Add(secondEmoji);
+
 
         return new EmojiInfo[] { firstEmoji, secondEmoji };
     }
