@@ -15,6 +15,8 @@ public class EmojiInteraction : MonoBehaviour
     {
         if (collision.CompareTag("Player")) // Check if the collider is the player
         {
+            var gameController = FindObjectOfType<EmojiGameController>();
+            gameController.m_answerChecker = this.GetComponent<EmojiAnswerChecker>();
             onPlayerEnter?.Invoke(); // Invoke the enter action
         }
     }

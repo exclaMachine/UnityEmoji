@@ -226,7 +226,8 @@ public class EmojiGameController : MonoBehaviour
 
     public void CheckInput(string input)
     {
-        if (m_answerChecker != null && m_answerChecker.CheckAnswer(input))
+        string typed = tmpInputField.text;
+        if (m_answerChecker != null && m_answerChecker.CheckAnswer(typed))
         {
             Debug.Log("Correct Answer!");
             // Implement logic for correct answer, e.g., make emojis disappear

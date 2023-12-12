@@ -107,7 +107,7 @@ public class EmojiDataLoader : MonoBehaviour
         m_emojiGroupIndex = randomGroupIndex;
 
         // Select a random group
-        var randomGroup = emojiData.groups[UnityEngine.Random.Range(0, emojiData.groups.Count)];
+        var randomGroup = emojiData.groups[randomGroupIndex];
         Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
 
         if (randomGroup.subgroups == null || randomGroup.subgroups.Count == 0)
