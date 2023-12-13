@@ -21,6 +21,7 @@ public class EmojiGameController : MonoBehaviour
     public TextMeshProUGUI emojiNameText; // Assign this in the Unity Editor
 
     public EmojiAnswerChecker m_answerChecker;
+    public GameObject m_blankEmojiObj;
 
 
     void Start()
@@ -188,7 +189,9 @@ public class EmojiGameController : MonoBehaviour
         answerChecker.SetPossibleAnswers(emojiDataLoader, groupIndex);
 
         EmojiInteraction interaction = blankEmojiObj.AddComponent<EmojiInteraction>();
+        //interaction.SetAnswerChecker(answerChecker);
         interaction.onPlayerEnter += () => ShowInputFieldAtPosition(worldPosition);
+        interaction.onPlayerEnter += () => SetCurrentBlankEmoji(blankEmojiObj);
         //interaction.onPlayerExit += HideInputField;
 
         return answerChecker;
@@ -223,6 +226,10 @@ public class EmojiGameController : MonoBehaviour
         tmpInputField.gameObject.SetActive(false);
     }
 
+    public void SetCurrentBlankEmoji(GameObject curBlankEmojiObject)
+    {
+        m_blankEmojiObj = curBlankEmojiObject;
+    }
 
     public void CheckInput(string input)
     {
@@ -237,7 +244,15 @@ public class EmojiGameController : MonoBehaviour
                 // Get the code of the matched emoji
                 string matchedEmojiCode = matchedEmoji.code;
                 Debug.Log($"Matched Emoji Code: {matchedEmojiCode}");
-
+                Sprite newSprite = emojiSpriteMapper.GetSprite(matchedEmojiCode);
+                if (m_blankEmojiObj != null)
+                {
+                    SpriteRenderer renderer = m_blankEmojiObj.GetComponent<SpriteRenderer>();
+                    if (renderer != null)
+                    {
+                        renderer.sprite = newSprite;
+                    }
+                }
                 // Implement logic to change the blank emoji to the user's inputted emoji
             }
 
