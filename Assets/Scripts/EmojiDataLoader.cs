@@ -42,10 +42,20 @@ public class EmojiInfo
     public List<string> emoticons; // List of emoticons
 }
 
+[System.Serializable]
+public class WordList
+{
+    public List<string> words;
+}
+
+
 
 public class EmojiDataLoader : MonoBehaviour
 {
     public TextAsset emojiJson; // Assign this in the Unity Editor
+    public TextAsset wordJson; // Assign this in the Unity Editor
+
+    public string m_sCurWord;
 
     //private EmojiData emojiData;
     private EmojiDataWrapper emojiData;
@@ -57,6 +67,11 @@ public class EmojiDataLoader : MonoBehaviour
     void Start()
     {
         LoadEmojiData();
+        // Get the current word index
+        m_sCurWord = GetCurrentWord();
+
+        Debug.Log($"curWord{m_sCurWord}");
+
         //TestRandomEmojiSelection();
         // GetRandomEmojisFromSameCategory();
     }
@@ -72,6 +87,40 @@ public class EmojiDataLoader : MonoBehaviour
         {
             Debug.LogError("Emoji JSON file is not assigned.");
         }
+    }
+
+
+
+    private string GetCurrentWord()
+    {
+        List<string> words = LoadWordList();
+        int totalWords = words.Count;
+        int currentWordIndex = PlayerPrefs.GetInt("WordIndex", 0);
+
+        // Make sure the index is within the range of available words
+        if (currentWordIndex < totalWords)
+        {
+            return words[currentWordIndex];
+        }
+
+        return null; // or handle this situation as needed
+    }
+
+    private List<string> LoadWordList()
+    {
+        // Deserialize the JSON string into the WordList object
+        WordList wordList = JsonUtility.FromJson<WordList>(wordJson.text);
+        return wordList.words;
+    }
+
+
+    private void UpdateWordIndex()
+    {
+        int currentWordIndex = PlayerPrefs.GetInt("WordIndex", 0);
+        currentWordIndex = (currentWordIndex + 1) % LoadWordList().Count;
+
+        PlayerPrefs.SetInt("WordIndex", currentWordIndex);
+        PlayerPrefs.Save();
     }
 
     // Public method to get emojiData
