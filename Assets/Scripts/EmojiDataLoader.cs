@@ -54,6 +54,9 @@ public class EmojiDataLoader : MonoBehaviour
 {
     public TextAsset emojiJson; // Assign this in the Unity Editor
     public TextAsset wordJson; // Assign this in the Unity Editor
+    public TextAsset fontsJson; // Assign this in Unity Editor
+
+    private FontCollection fontsCollection;
 
     public string m_sCurWord;
 
@@ -69,6 +72,8 @@ public class EmojiDataLoader : MonoBehaviour
         LoadEmojiData();
         // Get the current word index
         m_sCurWord = GetCurrentWord();
+
+        CreateFontData();
 
         Debug.Log($"curWord{m_sCurWord}");
 
@@ -88,8 +93,6 @@ public class EmojiDataLoader : MonoBehaviour
             Debug.LogError("Emoji JSON file is not assigned.");
         }
     }
-
-
 
     private string GetCurrentWord()
     {
@@ -111,6 +114,19 @@ public class EmojiDataLoader : MonoBehaviour
         // Deserialize the JSON string into the WordList object
         WordList wordList = JsonUtility.FromJson<WordList>(wordJson.text);
         return wordList.words;
+    }
+
+    private void CreateFontData()
+    {
+        if (fontsJson != null)
+        {
+            fontsCollection = JsonUtility.FromJson<FontCollection>(fontsJson.text);
+            Debug.Log("Fonts data loaded successfully.");
+        }
+        else
+        {
+            Debug.LogError("Fonts JSON file is not assigned.");
+        }
     }
 
 
@@ -210,5 +226,46 @@ public class EmojiDataLoader : MonoBehaviour
     {
         return currentPlaythroughEmojiDescriptions.Contains(description);
     }
+
+    [System.Serializable]
+    public class FontData
+    {
+        public string rarity;
+        public Dictionary<char, bool> characters;
+    }
+
+    public class FontCollection
+    {
+        public Dictionary<string, FontData> fonts;
+
+
+    }
+
+    private List<char> collectedLetters = new List<char>();
+
+
+    private void SelectRandomLetter()
+    {
+        // Ensure the current word has more than one letter
+        if (m_sCurWord.Length <= 1) return;
+
+        // Exclude the first letter and select a random letter
+        int randomIndex = UnityEngine.Random.Range(1, m_sCurWord.Length);
+        char selectedLetter = m_sCurWord[randomIndex];
+
+        // Check and select a font for the letter
+        foreach (var font in fontsCollection.fonts)
+        {
+            if (font.Value.characters.ContainsKey(selectedLetter) && !font.Value.characters[selectedLetter])
+            {
+                font.Value.characters[selectedLetter] = true; // Mark as collected
+                collectedLetters.Add(selectedLetter);
+                PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
+                                                                                                   //UpdateUIWithCollectedLetter(selectedLetter, font.Key); // Update UI
+                break;
+            }
+        }
+    }
+
 
 }
