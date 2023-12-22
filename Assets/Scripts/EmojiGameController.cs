@@ -236,14 +236,14 @@ public class EmojiGameController : MonoBehaviour
         string typed = tmpInputField.text;
         if (m_answerChecker != null && m_answerChecker.CheckAnswer(typed))
         {
-            Debug.Log("Correct Answer!");
+            //Debug.Log("Correct Answer!");
 
             EmojiInfo matchedEmoji = m_answerChecker.GetMatchedEmojiInfo();
             if (matchedEmoji != null)
             {
                 // Get the code of the matched emoji
                 string matchedEmojiCode = matchedEmoji.code;
-                Debug.Log($"Matched Emoji Code: {matchedEmojiCode}");
+                //Debug.Log($"Matched Emoji Code: {matchedEmojiCode}");
                 Sprite newSprite = emojiSpriteMapper.GetSprite(matchedEmojiCode);
                 if (m_blankEmojiObj != null)
                 {
@@ -255,6 +255,9 @@ public class EmojiGameController : MonoBehaviour
                 }
                 // Implement logic to change the blank emoji to the user's inputted emoji
             }
+
+            emojiDataLoader.SelectRandomLetter();
+            Debug.Log($"Collected letters: {emojiDataLoader.collectedLetters[0]}");
 
 
         }

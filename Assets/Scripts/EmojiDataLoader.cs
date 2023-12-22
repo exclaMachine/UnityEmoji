@@ -122,6 +122,16 @@ public class EmojiDataLoader : MonoBehaviour
         {
             fontsCollection = JsonUtility.FromJson<FontCollection>(fontsJson.text);
             Debug.Log("Fonts data loaded successfully.");
+
+            // Example of accessing data
+            // foreach (var font in fontsCollection.fonts)
+            // {
+            //     Debug.Log($"Font: {font.name}, Rarity: {font.rarity}");
+            //     foreach (var character in font.characters)
+            //     {
+            //         Debug.Log($"Character: {character.character}, Collected: {character.collected}");
+            //     }
+            // }
         }
         else
         {
@@ -230,21 +240,28 @@ public class EmojiDataLoader : MonoBehaviour
     [System.Serializable]
     public class FontData
     {
+        public string name;
         public string rarity;
-        public Dictionary<char, bool> characters;
+        public List<CharacterData> characters;
     }
 
+    [System.Serializable]
+    public class CharacterData
+    {
+        public string character;
+        public bool collected;
+    }
+
+    [System.Serializable]
     public class FontCollection
     {
-        public Dictionary<string, FontData> fonts;
-
-
+        public List<FontData> fonts;
     }
 
-    private List<char> collectedLetters = new List<char>();
+    public List<char> collectedLetters = new List<char>();
 
 
-    private void SelectRandomLetter()
+    public void SelectRandomLetter()
     {
         // Ensure the current word has more than one letter
         if (m_sCurWord.Length <= 1) return;
@@ -253,19 +270,37 @@ public class EmojiDataLoader : MonoBehaviour
         int randomIndex = UnityEngine.Random.Range(1, m_sCurWord.Length);
         char selectedLetter = m_sCurWord[randomIndex];
 
-        // Check and select a font for the letter
-        foreach (var font in fontsCollection.fonts)
+        // Convert the selected letter to a string
+        string selectedLetterStr = selectedLetter.ToString();
+
+        if (fontsCollection != null && fontsCollection.fonts != null && fontsCollection.fonts.Count > 0)
         {
-            if (font.Value.characters.ContainsKey(selectedLetter) && !font.Value.characters[selectedLetter])
+            foreach (var font in fontsCollection.fonts)
             {
-                font.Value.characters[selectedLetter] = true; // Mark as collected
-                collectedLetters.Add(selectedLetter);
-                PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
-                                                                                                   //UpdateUIWithCollectedLetter(selectedLetter, font.Key); // Update UI
-                break;
+                Debug.Log($"Font2: {font.name}, Rarity2: {font.rarity}");
+                // foreach (KeyValuePair<char, bool> character in font.characters)
+                // {
+                //     Debug.Log($"Character: {character.Key}, Collected: {character.Value}");
+                // }
             }
         }
+
+        // Check and select a font for the letter
+        // foreach (var font in fontsCollection.fonts)
+        // {
+        //     if (font.characters.ContainsKey(selectedLetterStr) && !font.characters[selectedLetterStr])
+        //     {
+        //         font.characters[selectedLetterStr] = true; // Mark as collected
+        //         collectedLetters.Add(selectedLetter);
+        //         PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
+        //                                                                                            // UpdateUIWithCollectedLetter(selectedLetter, font.name); // Update UI
+        //         break;
+        //     }
+        // }
     }
+
+    // Implement UpdateUIWithCollectedLetter as needed for UI updates
+
 
 
 }
