@@ -270,34 +270,29 @@ public class EmojiDataLoader : MonoBehaviour
         int randomIndex = UnityEngine.Random.Range(1, m_sCurWord.Length);
         char selectedLetter = m_sCurWord[randomIndex];
 
-        // Convert the selected letter to a string
-        string selectedLetterStr = selectedLetter.ToString();
-
-        if (fontsCollection != null && fontsCollection.fonts != null && fontsCollection.fonts.Count > 0)
+        // Check and select a font for the letter
+        foreach (var font in fontsCollection.fonts)
         {
-            foreach (var font in fontsCollection.fonts)
+            foreach (var characterData in font.characters)
             {
-                Debug.Log($"Font2: {font.name}, Rarity2: {font.rarity}");
-                // foreach (KeyValuePair<char, bool> character in font.characters)
-                // {
-                //     Debug.Log($"Character: {character.Key}, Collected: {character.Value}");
-                // }
+                if (characterData.character[0] == selectedLetter && !characterData.collected)
+                {
+                    characterData.collected = true; // Mark as collected
+                    collectedLetters.Add(selectedLetter);
+                    PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
+                                                                                                       //UpdateUIWithCollectedLetter(selectedLetter, font.name); // Update UI
+                    break;
+                }
             }
         }
-
-        // Check and select a font for the letter
-        // foreach (var font in fontsCollection.fonts)
-        // {
-        //     if (font.characters.ContainsKey(selectedLetterStr) && !font.characters[selectedLetterStr])
-        //     {
-        //         font.characters[selectedLetterStr] = true; // Mark as collected
-        //         collectedLetters.Add(selectedLetter);
-        //         PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
-        //                                                                                            // UpdateUIWithCollectedLetter(selectedLetter, font.name); // Update UI
-        //         break;
-        //     }
-        // }
     }
+
+    private void UpdateUIWithCollectedLetter(char letter, string fontName)
+    {
+        // Implement UI update logic to display the letter in the chosen font
+        // This is a placeholder function
+    }
+
 
     // Implement UpdateUIWithCollectedLetter as needed for UI updates
 
