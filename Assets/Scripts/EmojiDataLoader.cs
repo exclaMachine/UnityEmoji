@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 [Serializable]
 public class EmojiDataWrapper
@@ -55,6 +56,8 @@ public class EmojiDataLoader : MonoBehaviour
     public TextAsset emojiJson; // Assign this in the Unity Editor
     public TextAsset wordJson; // Assign this in the Unity Editor
     public TextAsset fontsJson; // Assign this in Unity Editor
+
+    public TextMeshProUGUI collectedLettersText; // Assign this in the Unity Editor
 
     private FontCollection fontsCollection;
 
@@ -261,16 +264,30 @@ public class EmojiDataLoader : MonoBehaviour
     public List<char> collectedLetters = new List<char>();
 
 
+    private List<int> alreadySelectedLetterIndices = new List<int>();
+
     public void SelectRandomLetter()
     {
         // Ensure the current word has more than one letter
         if (m_sCurWord.Length <= 1) return;
 
-        // Exclude the first letter and select a random letter
-        int randomIndex = UnityEngine.Random.Range(1, m_sCurWord.Length);
-        char selectedLetter = m_sCurWord[randomIndex];
+        char selectedLetter;
+        int randomIndex;
+
+        do
+        {
+            // Exclude the first letter and select a random letter
+            randomIndex = UnityEngine.Random.Range(0, m_sCurWord.Length);
+            selectedLetter = m_sCurWord[randomIndex];
+        }
+        while (alreadySelectedLetterIndices.Contains(randomIndex));
+
+        // Add the selected letter index to the already selected list
+        alreadySelectedLetterIndices.Add(randomIndex);
 
         // Check and select a font for the letter
+        bool letterSelected = false;
+
         foreach (var font in fontsCollection.fonts)
         {
             foreach (var characterData in font.characters)
@@ -280,21 +297,33 @@ public class EmojiDataLoader : MonoBehaviour
                     characterData.collected = true; // Mark as collected
                     collectedLetters.Add(selectedLetter);
                     PlayerPrefs.SetString("CollectedLetters", new string(collectedLetters.ToArray())); // Store in PlayerPrefs
-                                                                                                       //UpdateUIWithCollectedLetter(selectedLetter, font.name); // Update UI
+                    UpdateUIWithCollectedLetter(selectedLetter, font.name); // Update UI
+                    letterSelected = true;
                     break;
                 }
             }
+            if (letterSelected)
+            {
+                break; // Break out of the outer loop as well
+            }
         }
+
     }
 
     private void UpdateUIWithCollectedLetter(char letter, string fontName)
     {
-        // Implement UI update logic to display the letter in the chosen font
-        // This is a placeholder function
+        //collectedLetters.Add(letter);
+
+        // Concatenate all collected letters into a string
+        string collectedLettersString = new string(collectedLetters.ToArray());
+
+        // Update the TextMeshProUGUI element with the collected letters
+        collectedLettersText.text = collectedLettersString;
+
+        // Optionally, you can also try to apply the font style if you have it as a resource
+        // Note: Dynamic font changing can be complex depending on the font type and method
     }
 
-
-    // Implement UpdateUIWithCollectedLetter as needed for UI updates
 
 
 

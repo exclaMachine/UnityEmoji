@@ -257,7 +257,7 @@ public class EmojiGameController : MonoBehaviour
             }
 
             emojiDataLoader.SelectRandomLetter();
-            Debug.Log($"Collected letters: {emojiDataLoader.collectedLetters[0]}");
+            Debug.Log($"Collected letters: {emojiDataLoader.collectedLetters}");
 
 
         }
