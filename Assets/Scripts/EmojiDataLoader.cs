@@ -182,52 +182,80 @@ public class EmojiDataLoader : MonoBehaviour
             return null;
         }
 
-        int randomGroupIndex = UnityEngine.Random.Range(0, emojiData.groups.Count);
-        m_emojiGroupIndex = randomGroupIndex;
+        int maxRetries = 5;  // Maximum number of retries
+        int retryCount = 0;
 
-        // Select a random group
-        var randomGroup = emojiData.groups[randomGroupIndex];
-        Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
-
-        if (randomGroup.subgroups == null || randomGroup.subgroups.Count == 0)
+        while (retryCount < maxRetries)
         {
-            Debug.LogError("Selected group has no subgroups");
-            return null;
+
+            int randomGroupIndex = UnityEngine.Random.Range(0, emojiData.groups.Count);
+            m_emojiGroupIndex = randomGroupIndex;
+
+            // Select a random group
+            var randomGroup = emojiData.groups[randomGroupIndex];
+            Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
+
+            if (randomGroup.subgroups != null || randomGroup.subgroups.Count != 0)
+            {
+                var randomSubgroup = randomGroup.subgroups[UnityEngine.Random.Range(0, randomGroup.subgroups.Count)];
+                if (randomSubgroup.categories != null || randomSubgroup.categories.Count != 0)
+                {
+                    var randomCategory = randomSubgroup.categories[UnityEngine.Random.Range(0, randomSubgroup.categories.Count)];
+                    if (randomCategory.emojis != null || randomCategory.emojis.Count > 2)
+                    {
+                        // Select two different random emojis from the same category
+                        EmojiInfo firstEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
+                        EmojiInfo secondEmoji;
+
+                        do
+                        {
+                            secondEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
+                        } while (secondEmoji == firstEmoji);
+
+                        currentPlaythroughEmojiDescriptions.Add(firstEmoji.description);
+                        currentPlaythroughEmojiDescriptions.Add(secondEmoji.description);
+
+                        currentPlaythroughEmojis.Add(firstEmoji);
+                        currentPlaythroughEmojis.Add(secondEmoji);
+
+
+                        return new EmojiInfo[] { firstEmoji, secondEmoji };
+
+                    }
+
+                }
+            }
+            else
+            {
+                retryCount++;
+            }
         }
+        // If still can't find emojis just return these default ones. Probably will never hit this
 
-        // Select a random subgroup
-        var randomSubgroup = randomGroup.subgroups[UnityEngine.Random.Range(0, randomGroup.subgroups.Count)];
-        if (randomSubgroup.categories == null || randomSubgroup.categories.Count == 0)
+        EmojiInfo defaultEmoji1 = new EmojiInfo
         {
-            Debug.LogError("Selected subgroup has no categories");
-            return null;
-        }
+            code = "1F41C",
+            character = "🐜",
+            description = "ant",
+            emoticons = new List<string>()  // Assuming emoticons is a list of strings
+        };
 
-        // Select a random category
-        var randomCategory = randomSubgroup.categories[UnityEngine.Random.Range(0, randomSubgroup.categories.Count)];
-        if (randomCategory.emojis == null || randomCategory.emojis.Count < 2)
+        EmojiInfo defaultEmoji2 = new EmojiInfo
         {
-            Debug.LogError("Selected category has insufficient emojis");
-            return null;
-        }
+            code = "1F41D",
+            character = "🐝",
+            description = "honeybee",
+            emoticons = new List<string>()  // Assuming emoticons is a list of strings
+        };
 
-        // Select two different random emojis from the same category
-        EmojiInfo firstEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
-        EmojiInfo secondEmoji;
+        currentPlaythroughEmojiDescriptions.Add(defaultEmoji1.description);
+        currentPlaythroughEmojiDescriptions.Add(defaultEmoji2.description);
 
-        do
-        {
-            secondEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
-        } while (secondEmoji == firstEmoji);
+        currentPlaythroughEmojis.Add(defaultEmoji1);
+        currentPlaythroughEmojis.Add(defaultEmoji2);
 
-        currentPlaythroughEmojiDescriptions.Add(firstEmoji.description);
-        currentPlaythroughEmojiDescriptions.Add(secondEmoji.description);
+        return new EmojiInfo[] { defaultEmoji1, defaultEmoji2 };
 
-        currentPlaythroughEmojis.Add(firstEmoji);
-        currentPlaythroughEmojis.Add(secondEmoji);
-
-
-        return new EmojiInfo[] { firstEmoji, secondEmoji };
     }
 
     public int GetCurrentEmojiGroupIndex()
