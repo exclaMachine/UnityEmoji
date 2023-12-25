@@ -193,7 +193,7 @@ public class EmojiDataLoader : MonoBehaviour
 
             // Select a random group
             var randomGroup = emojiData.groups[randomGroupIndex];
-            Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
+            //Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
 
             if (randomGroup.subgroups != null || randomGroup.subgroups.Count != 0)
             {
@@ -350,6 +350,12 @@ public class EmojiDataLoader : MonoBehaviour
 
         // Optionally, you can also try to apply the font style if you have it as a resource
         // Note: Dynamic font changing can be complex depending on the font type and method
+
+        WordJumbleSolver wordJumbleSolver = FindObjectOfType<WordJumbleSolver>();
+        if (collectedLetters.Count() == 5)
+        {
+            wordJumbleSolver.ShowInputField(m_sCurWord);
+        }
     }
 
 
