@@ -195,13 +195,13 @@ public class EmojiDataLoader : MonoBehaviour
             var randomGroup = emojiData.groups[randomGroupIndex];
             //Debug.Log($"Random Group Index: {randomGroupIndex}, Name: {randomGroup.name}, Number of Subgroups: {randomGroup.subgroups.Count}");
 
-            if (randomGroup.subgroups != null || randomGroup.subgroups.Count != 0)
+            if (randomGroup.subgroups != null && randomGroup.subgroups.Count != 0)
             {
                 var randomSubgroup = randomGroup.subgroups[UnityEngine.Random.Range(0, randomGroup.subgroups.Count)];
-                if (randomSubgroup.categories != null || randomSubgroup.categories.Count != 0)
+                if (randomSubgroup.categories != null && randomSubgroup.categories.Count != 0)
                 {
                     var randomCategory = randomSubgroup.categories[UnityEngine.Random.Range(0, randomSubgroup.categories.Count)];
-                    if (randomCategory.emojis != null || randomCategory.emojis.Count > 2)
+                    if (randomCategory.emojis != null && randomCategory.emojis.Count > 2)
                     {
                         // Select two different random emojis from the same category
                         EmojiInfo firstEmoji = randomCategory.emojis[UnityEngine.Random.Range(0, randomCategory.emojis.Count)];
@@ -351,6 +351,8 @@ public class EmojiDataLoader : MonoBehaviour
         // Optionally, you can also try to apply the font style if you have it as a resource
         // Note: Dynamic font changing can be complex depending on the font type and method
 
+        ApplyFontStyle(collectedLettersText, fontName);
+
         WordJumbleSolver wordJumbleSolver = FindObjectOfType<WordJumbleSolver>();
         if (collectedLetters.Count() == 5)
         {
@@ -358,7 +360,20 @@ public class EmojiDataLoader : MonoBehaviour
         }
     }
 
-
+    private void ApplyFontStyle(TMPro.TextMeshProUGUI textElement, string fontName)
+    {
+        // Load the font from the Resources folder
+        //fontName = "Roboto SDF";
+        var fontAsset = Resources.Load<TMPro.TMP_FontAsset>($"Fonts/{fontName}-Regular SDF");
+        if (fontAsset != null)
+        {
+            textElement.font = fontAsset;
+        }
+        else
+        {
+            Debug.LogError($"Font asset not found for {fontName}");
+        }
+    }
 
 
 }
