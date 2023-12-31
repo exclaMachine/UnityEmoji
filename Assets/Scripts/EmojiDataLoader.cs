@@ -363,7 +363,7 @@ public class EmojiDataLoader : MonoBehaviour
     private void ApplyFontStyle(TMPro.TextMeshProUGUI textElement, string fontName)
     {
         // Load the font from the Resources folder
-        //fontName = "Roboto SDF";
+        //fontName = "Alegreya";
         var fontAsset = Resources.Load<TMPro.TMP_FontAsset>($"Fonts/{fontName}-Regular SDF");
         if (fontAsset != null)
         {
