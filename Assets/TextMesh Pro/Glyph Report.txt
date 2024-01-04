@@ -1,5 +1,5 @@
-Font: Lato  Style: Regular
-Point Size: 68   SP/PD Ratio: 8.8%
+Font: Lobster  Style: Regular
+Point Size: 63   SP/PD Ratio: 9.5%
 
 Characters included: 97/99
 Missing characters: 2
