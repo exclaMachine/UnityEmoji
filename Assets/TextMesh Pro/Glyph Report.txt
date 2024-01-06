@@ -1,12 +1,14 @@
-Font: Montserrat  Style: Regular
-Point Size: 66   SP/PD Ratio: 9.1%
+Font: Mukta  Style: Regular
+Point Size: 73   SP/PD Ratio: 8.2%
 
-Characters included: 99/99
-Missing characters: 0
+Characters included: 97/99
+Missing characters: 2
 Excluded characters: 0
 
 Characters missing from font file:
 ----------------------------------------
+ID: 8203	Hex: 200B	Char [​]
+ID: 9633	Hex: 25A1	Char [□]
 
 Characters excluded from packing:
 ----------------------------------------
